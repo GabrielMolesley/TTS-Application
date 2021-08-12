@@ -6,10 +6,10 @@ import time
 import random
 import string
 
-s3 = boto3.resource('s3', aws_access_key_id= 'AKIAUBLQ6V2IDFCDVKI3', aws_secret_access_key='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')
+s3 = boto3.resource('s3', aws_access_key_id= 'AKIAUBLQ6V2IH4M6FTYJ', aws_secret_access_key='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')
 letters = string.ascii_lowercase
-ACCESS_KEY = "AKIAUBLQ6V2IDFCDVKI3"
-SECRET_KEY = "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"
+ACCESS_KEY = "AKIAUBLQ6V2IH4M6FTYJ"
+SECRET_KEY = "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"
 REGION_NAME = "eu-central-1"
 BUCKET_NAME = ''.join(random.choice(letters) for i in range(10))
 print(BUCKET_NAME)
@@ -63,7 +63,7 @@ def synth_speech(form):
     
   )
   print(s3.Bucket(BUCKET_NAME) in s3.buckets.all())
-  polly_client = boto3.Session(aws_access_key_id= 'AKIAUBLQ6V2IDFCDVKI3', aws_secret_access_key='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', region_name=REGION_NAME).client('polly', )
+  polly_client = boto3.Session(aws_access_key_id= 'AKIAUBLQ6V2IH4M6FTYJ', aws_secret_access_key='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', region_name=REGION_NAME).client('polly', )
   polly_client.synthesize_speech(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural')
   task = polly_client.start_speech_synthesis_task(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural', OutputS3BucketName = BUCKET_NAME, SnsTopicArn = "arn:aws:sns:eu-central-1:277799153296:TTS-Status")
 
