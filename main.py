@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, request
 app = Flask(__name__)
+import botocore
 import boto3
 from boto3 import Session
 import time
@@ -8,33 +9,23 @@ import string
 
 s3 = boto3.resource('s3', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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')
 letters = string.ascii_lowercase
-ACCESS_KEY = 'AKIAUBLQ6V2IFEHUERNB'
-SECRET_KEY = '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'
-REGION_NAME = 'eu-central-1'
-BUCKET_NAME = ''.join(random.choice(letters) for i in range(10))
+ACCESS_KEY = "AKIAUBLQ6V2IFEHUERNB"
+SECRET_KEY = "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"
+REGION_NAME = "eu-central-1"
+# BUCKET_NAME = ''.join(random.choice(letters) for i in range(10))
+BUCKET_NAME = "tts-buck"
 print(BUCKET_NAME)
 
 
 
 def create_url():
 
-
   print(BUCKET_NAME)
-
-  
-  letters = string.ascii_lowercase
-  ACCESS_KEY = 'AKIAUBLQ6V2IFEHUERNB'
-  SECRET_KEY = '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'
-  REGION_NAME = 'eu-central-1'
-  BUCKET_NAME = ''.join(random.choice(letters) for i in range(10))
-  ses = Session(aws_access_key_id=ACCESS_KEY,
-              aws_secret_access_key=SECRET_KEY,
-              region_name=REGION_NAME)
-  client = ses.client('s3')
+  ses = Session(aws_access_key_id='AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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',region_name='ca-central-1')
+  client = ses.client('s3',aws_access_key_id='AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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')
   time.sleep(10)
   objs = client.list_objects(Bucket=BUCKET_NAME)['Contents']     
   latest = max(objs, key=lambda x: x['LastModified'])
-
   url = client.generate_presigned_url(
     ClientMethod='get_object',
     Params={
@@ -43,18 +34,10 @@ def create_url():
     },
     ExpiresIn=600
   )
-  #deleteresponse = client.delete_bucket(
-    #Bucket=BUCKET_NAME,
-  #print(deleteresponse)
   return url
 
 
 def synth_speech(form):
-  letters = string.ascii_lowercase
-  ACCESS_KEY = 'AKIAUBLQ6V2IFEHUERNB'
-  SECRET_KEY = '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'
-  REGION_NAME = 'eu-central-1'
-  BUCKET_NAME = ''.join(random.choice(letters) for i in range(10))
 
   ses = Session(aws_access_key_id=ACCESS_KEY,
               aws_secret_access_key=SECRET_KEY,
@@ -63,16 +46,16 @@ def synth_speech(form):
   client = ses.client('s3')
   recievedtext = request.form['text-input']
   print("text recieved")
-  client.create_bucket(Bucket=BUCKET_NAME, CreateBucketConfiguration={
-        'LocationConstraint': 'eu-central-1'
-    },
+  #client.create_bucket(Bucket=BUCKET_NAME, CreateBucketConfiguration={
+  #      'LocationConstraint': 'ca-central-1'
+  #  },
     
-    GrantFullControl="id=c3c480d6de740e9b3ce03f0ef553a87da759a441329d4a67f7558be00fe3d6bb",
-    ObjectLockEnabledForBucket=False
+  #  GrantFullControl="id=c3c480d6de740e9b3ce03f0ef553a87da759a441329d4a67f7558be00fe3d6bb",
+  #  ObjectLockEnabledForBucket=False
     
-  )
+  #)
   print(s3.Bucket(BUCKET_NAME) in s3.buckets.all())
-  polly_client = boto3.Session(aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name=REGION_NAME).client('polly', )
+  polly_client = boto3.Session(aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name=REGION_NAME).client('polly')
   polly_client.synthesize_speech(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural')
   task = polly_client.start_speech_synthesis_task(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural', OutputS3BucketName = BUCKET_NAME, SnsTopicArn = "arn:aws:sns:eu-central-1:277799153296:TTS-Status")
 
@@ -103,6 +86,5 @@ def index():
 
 
 if __name__ == "__main__":
-  app.run(debug=True, host="0.0.0.0", threaded=True)
-
+  app.run(debug=True, host="0.0.0.0")
 
