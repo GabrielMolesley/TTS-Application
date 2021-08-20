@@ -29,7 +29,7 @@ def create_url():
   print(BUCKET_NAME)
   ses = Session(aws_access_key_id='AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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',region_name='eu-central-1')
   client = ses.client('s3',aws_access_key_id='AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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')
-  time.sleep(10)
+  time.sleep(40)
   objs = client.list_objects(Bucket=BUCKET_NAME)['Contents']     
   latest = max(objs, key=lambda x: x['LastModified'])
   url = client.generate_presigned_url(
@@ -38,7 +38,7 @@ def create_url():
         'Bucket': BUCKET_NAME,
         'Key': latest['Key']
     },
-    ExpiresIn=600
+    ExpiresIn=604799
   )
   return url
 
@@ -62,7 +62,7 @@ def synth_speech(form):
   #)
   print(s3.Bucket(BUCKET_NAME) in s3.buckets.all())
   polly_client = boto3.Session(aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name=REGION_NAME).client('polly')
-  polly_client.synthesize_speech(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural')
+  #polly_client.synthesize_speech(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural')
   task = polly_client.start_speech_synthesis_task(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural', OutputS3BucketName = BUCKET_NAME, SnsTopicArn = "arn:aws:sns:eu-central-1:277799153296:TTS-Status")
 
   print("Call returned: ", task)
@@ -112,4 +112,3 @@ def index():
 
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port="80")
-
