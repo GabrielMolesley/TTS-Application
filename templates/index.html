@@ -14,10 +14,80 @@
         <br><br>
         <textarea name="text-input" cols="40" rows="10"  ></textarea>
         <br><br>
+        <div class="box">
+          <select name="Language" id="Language">
+            <option value="Zeina">Arabic (Female)</option>
+            <option value="Zhiyu">Chinese, Mandarin (Female)</option>
+            <option value="Naja">Danish (Female)</option>
+            <option value="Mads">Danish (Male)</option>
+            <option value="Lotte">Dutch (Female)</option>
+            <option value="Ruben">Dutch (Male)</option>
+            <option value="Nicole">English, Australian (Female)</option>
+            <option value="Olivia">English, Australian (Female 2)</option>
+            <option value="Russel">English, Australian (Male)</option>
+            <option value="Amy">English, British (Female)</option>
+            <option value="Emma">English, British (Female 2)</option>
+            <option value="Brian">English, British (Male)</option>
+            <option value="Aditi">English, Indian (Female)</option>
+            <option value="Raveena">English, Indian (Female 2)</option>
+            <option value="Aria">English, New Zealand (Female)</option>
+            <option value="Olivia">English, South-African (Female)</option>
+            <option value="Ivy">English, US (Female child)</option>
+            <option value="Joanna">English, US (Female)</option>
+            <option value="Kendra">English, US (Female 2)</option>
+            <option value="Kimberly">English, US (Female 3)</option>
+            <option value="Salli">English, US (Female 4)</option>
+            <option value="Joey">English, US (Male)</option>
+            <option value="Justin">English, US (Male child)</option>
+            <option value="Kevin">English, US (Male child 2)</option>
+            <option value="Mathew">English, US (Male 2)</option>
+            <option value="Geraint">English, Welsh</option>
+            <option value="Céline">French (Female)</option>
+            <option value="Léa">French (Female 2)</option>
+            <option value="Mathieu">French (Male)</option>
+            <option value="Chantal">French, Canadian (Female)</option>
+            <option value="Gabrielle">French, Canadian (Female 2)</option>
+            <option value="Marlene">German (Female)</option>
+            <option value="Vicki">German (Female 2)</option>
+            <option value="Hans">German (Male)</option>
+            <option value="Aditi">Hindi (Female)</option>
+            <option value="Dora">Icelandic (Female)</option>
+            <option value="Karl">Icelandic (Male)</option>
+            <option value="Carla">Italian (Female)</option>
+            <option value="Bianca">Italian (Female 2)</option>
+            <option value="Giorgio">Italian (Male)</option>
+            <option value="Mizuki">Japanese (Female)</option>
+            <option value="Takumi">Japanese (Male)</option>
+            <option value="Seoyeon">Korean (Male)</option>
+            <option value="Liv">Norwegian (Female)</option>
+            <option value="Ewa">Polish (Female)</option>
+            <option value="Maja">Polish (Female 2)</option>
+            <option value="Jacek">Polish (Male)</option>
+            <option value="Jan">Polish (Male 2)</option>
+            <option value="Camila">Portuguese, Brazilian (Female)</option>
+            <option value="Vitoria">Portuguese, Brazilian (Female 2)</option>
+            <option value="Ricardo">Portuguese, Brazilian (Male)</option>
+            <option value="Ines">Portuguese, European (Female)</option>
+            <option value="Cristiano">Portuguese, European (Male)</option>
+            <option value="Carmen">Romanian (Female)</option>
+            <option value="Tatyana">Russian (Female)</option>
+            <option value="Maxim">Russian (Male)</option>
+            <option value="Conchita">Spanish, European (Female)</option>
+            <option value="Lucia">Spanish, European (Female 2)</option>
+            <option value="Enrique">Spanish, European (Male)</option>
+            <option value="Mia">Spanish, Mexican (Female)</option>
+            <option value="Lupe">Spanish, US (Female)</option>
+            <option value="Penelope">Spanish, US (Female 2)</option>
+            <option value="Miguel">Spanish, US (Male)</option>
+            <option value="Astrid">Swedish (Female)</option>
+            <option value="Filiz">Turkish (Female)</option>
+            <option value="Gwyneth">Welsh (Female)</option>
+          </select>
+        </div>
+
         <input type="submit" name="next" value="Next">
         <br><br><br><br>
         <script>
-  
         </script>    
 
       </form>
@@ -26,10 +96,9 @@
   </head>
   <body>
     {% if url %}
-    <a href="{{url}}" download="speech">
+    <a href="{{url}}" download>
       <button type="button">Download</button>
       </a>
     {% endif %}
   </body>
-
   </html>

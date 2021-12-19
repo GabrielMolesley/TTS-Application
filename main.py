@@ -23,13 +23,11 @@ BUCKET_NAME = "tts-buck"
 print(BUCKET_NAME)
 
 
-
 def create_url():
 
   print(BUCKET_NAME)
   ses = Session(aws_access_key_id='AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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',region_name='eu-central-1')
   client = ses.client('s3',aws_access_key_id='AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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')
-  time.sleep(40)
   objs = client.list_objects(Bucket=BUCKET_NAME)['Contents']     
   latest = max(objs, key=lambda x: x['LastModified'])
   url = client.generate_presigned_url(
@@ -50,31 +48,42 @@ def synth_speech(form):
               region_name=REGION_NAME)
 
   client = ses.client('s3')
+  neuralnames = ["Olivia","Amy","Emma","Brian","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly","Salli","Joey","Justin","Kevin","Matthew","Gabrielle","Léa","Vicki","Bianca","Takumi","Seoyeon","Camila","Lucia","Lupe"]
   recievedtext = request.form['text-input']
+  language = request.form['Language']
+  neural = ""
   print("text recieved")
-  #client.create_bucket(Bucket=BUCKET_NAME, CreateBucketConfiguration={
-  #      'LocationConstraint': 'ca-central-1'
-  #  },
-    
-  #  GrantFullControl="id=c3c480d6de740e9b3ce03f0ef553a87da759a441329d4a67f7558be00fe3d6bb",
-  #  ObjectLockEnabledForBucket=False
-    
+  if language in neuralnames:
+    neural = "neural"
+  else:
+    neural = "standard"
+  print("text recieved")
+  
   #)
   print(s3.Bucket(BUCKET_NAME) in s3.buckets.all())
   polly_client = boto3.Session(aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name=REGION_NAME).client('polly')
   #polly_client.synthesize_speech(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural')
-  task = polly_client.start_speech_synthesis_task(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural', OutputS3BucketName = BUCKET_NAME, SnsTopicArn = "arn:aws:sns:eu-central-1:277799153296:TTS-Status")
-
-  print("Call returned: ", task)
-  if task['ResponseMetadata']['HTTPStatusCode'] == 200:
-    time.sleep(20)
+  task = polly_client.start_speech_synthesis_task(VoiceId=language, OutputFormat='mp3', Text = recievedtext, Engine = neural, OutputS3BucketName = BUCKET_NAME, SnsTopicArn = "arn:aws:sns:eu-central-1:277799153296:TTS-Status")
+  taskId = task['SynthesisTask']['TaskId']
+  finished = False
+  print( "Task id is {} ".format(taskId))
+  task_status = polly_client.get_speech_synthesis_task(TaskId = taskId)
+  print(task_status['SynthesisTask']['TaskStatus'])
+  while(True):
+    taskId = task['SynthesisTask']['TaskId']
+    task_status = polly_client.get_speech_synthesis_task(TaskId = taskId)
+    if task_status['SynthesisTask']['TaskStatus'] == "completed":
+      print("Task finished!")
+      finished = True
+      break
+  print(task_status)
+  if finished == True:
     return create_url()
-  else:
-    print("Error while calling speech synthesis: ", task)
-  print("finished")
-  return None
-
-
+  print("Call returned: ", task)
+print("finished")
+#if task['ResponseMetadata']['HTTPStatusCode'] == 200:
+    #time.sleep(20)
+    #return create_url()
 
   
 
