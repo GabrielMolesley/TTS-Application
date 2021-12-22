@@ -8,7 +8,12 @@ import time
 import random
 import string
 #login config
+from OpenSSL import SSL
 
+context = SSL.Context(SSL.TLSv1_2_METHOD)
+context.use_certificate_file('certificate.crt')
+context.use_certificate_chain_file('ca_bundle.crt')
+context.use_privatekey_file('private.key')
 dynamodb = boto3.resource('dynamodb', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name='eu-central-1')
 
 table = dynamodb.Table('users')
@@ -55,8 +60,10 @@ def synth_speech(form):
   print("text recieved")
   if language in neuralnames:
     neural = "neural"
+    print("Using:" + neural)
   else:
     neural = "standard"
+    print("Using:" + neural)
   print("text recieved")
   
   #)
@@ -120,4 +127,4 @@ def index():
 
 
 if __name__ == "__main__":
-  app.run(debug=True, host="0.0.0.0", port="443")
+  app.run(debug=True, host="0.0.0.0", port="80", ssl_context=context)
