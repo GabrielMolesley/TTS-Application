@@ -11,7 +11,7 @@ import string
 from OpenSSL import SSL
 
 context = SSL.Context(SSL.TLSv1_2_METHOD)
-context.use_certificate_file('''-----BEGIN CERTIFICATE-----
+context.use_certificate('''-----BEGIN CERTIFICATE-----
 MIIGazCCBFOgAwIBAgIRAKBiMqBjTfokYCA0hd2HeucwDQYJKoZIhvcNAQEMBQAw
 SzELMAkGA1UEBhMCQVQxEDAOBgNVBAoTB1plcm9TU0wxKjAoBgNVBAMTIVplcm9T
 U0wgUlNBIERvbWFpbiBTZWN1cmUgU2l0ZSBDQTAeFw0yMTEyMTkwMDAwMDBaFw0y
@@ -88,7 +88,7 @@ ON51WhJ6W0xNdNJwzYASZYH+tmCWI+N60Gv2NNMGHwMZ7e9bXgzUCZH5FaBFDGR5
 S9VWqHB73Q+OyIVvIbKYcSc2w/aSuFKGSA==
 -----END CERTIFICATE-----
 ''')
-context.use_privatekey_file('''-----BEGIN RSA PRIVATE KEY-----
+context.use_privatekey('''-----BEGIN RSA PRIVATE KEY-----
 MIIEpQIBAAKCAQEAxSmnK8qnNAD62mIcS9nTZW6wdSfwhk1WSYAOL47/kaX5yLCC
 XzD93TJ93YKBPmOx8hWaTdpBSEoa5eLW6nehkFr5UreQ8dt98KDxOhgEC77gvQ2p
 MhNGGfVYRgnvpr2PIxM/8DlTVd3wP5s0XwKxHKHptHFwXLiwFptqOosGq+Nwk653
