@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, session, redirect
 from werkzeug.wrappers import response
 
 import botocore
@@ -7,10 +7,10 @@ from boto3 import Session
 import time
 import random
 import string
+from flask_awscognito import AWSCognitoAuthentication
 #login config
-
 app = Flask(__name__)
-
+app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='development')
 dynamodb = boto3.resource('dynamodb', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name='eu-central-1')
 
 table = dynamodb.Table('users')
@@ -86,7 +86,7 @@ print("Done...")
 
 @app.route('/')
 def login():
-  return render_template('login.html')
+  return redirect("https://juunlogin.auth.eu-central-1.amazoncognito.com/login?response_type=code&client_id=40a0485tsh6tgk1r0ad72rafj7&redirect_uri=https%3A%2F%2Fjuun.co%2Fhome", code=302)
 
 @app.route('/', methods=['GET', 'POST'])
 def check():
@@ -110,10 +110,13 @@ def index():
     if request.method == 'POST':
       form = request.form
       result = synth_speech(form)
-
-    return render_template('index.html', url = result)
+    resp = render_template('index.html', url = result)
+    resp.set_cookie('userid', )
+    return resp
 
 
 if __name__ == "__main__":
   context = ('certificate.crt', 'private.key')
   app.run(debug=False, host="0.0.0.0", port="443", ssl_context=context)
+
+
