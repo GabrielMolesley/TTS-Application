@@ -7,11 +7,11 @@ from boto3 import Session
 import time
 import random
 import string
-from flask_sslify import SSLify
+from flask_talisman import Talisman
 #login config
 
 app = Flask(__name__)
-sslify = SSLify(app)
+Talisman(app)
 
 dynamodb = boto3.resource('dynamodb', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name='eu-central-1')
 
@@ -127,4 +127,4 @@ def index():
 
 if __name__ == "__main__":
   context = ('certificate.crt', 'private.key')
-  app.run(debug=False, host="0.0.0.0", port="80", ssl_context=context)
+  app.run(debug=False, host="127.0.0.1", port="80", ssl_context=context)
