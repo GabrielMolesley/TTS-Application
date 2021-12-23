@@ -51,14 +51,17 @@ def synth_speech(form):
   neuralnames = ["Olivia","Amy","Emma","Brian","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly","Salli","Joey","Justin","Kevin","Matthew","Gabrielle","Léa","Vicki","Bianca","Takumi","Seoyeon","Camila","Lucia","Lupe"]
   recievedtext = request.form['text-input']
   language = request.form['Language']
+  engineusing = ""
   print("Text recieved...")
   if language in neuralnames:
+    engineusing = "neural"
     print("Using the neural engine")
   else:
     print("Using the standard engine")
+    engineusing = "standard"
   print(s3.Bucket(BUCKET_NAME) in s3.buckets.all())
   polly_client = boto3.Session(aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name=REGION_NAME).client('polly')
-  task = polly_client.start_speech_synthesis_task(VoiceId=language, OutputFormat='mp3', Text = recievedtext, Engine = neural, OutputS3BucketName = BUCKET_NAME, SnsTopicArn = "arn:aws:sns:eu-central-1:277799153296:TTS-Status")
+  task = polly_client.start_speech_synthesis_task(VoiceId=language, OutputFormat='mp3', Text = recievedtext, Engine = engineusing, OutputS3BucketName = BUCKET_NAME, SnsTopicArn = "arn:aws:sns:eu-central-1:277799153296:TTS-Status")
   taskId = task['SynthesisTask']['TaskId']
   finished = False
   print( "Task id is {} ".format(taskId))
