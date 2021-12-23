@@ -7,7 +7,7 @@ from boto3 import Session
 import time
 import random
 import string
-from flask_sslify import SSLify
+from Flask_SSLify import SSLify
 #login config
 
 app = Flask(__name__)
