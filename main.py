@@ -127,4 +127,4 @@ def index():
 
 if __name__ == "__main__":
   context = ('certificate.crt', 'private.key')
-  app.run(debug=False, host="127.0.0.1", port="80", ssl_context=context)
+  app.run(debug=False, host="0.0.0.0", port="80", ssl_context=context)
