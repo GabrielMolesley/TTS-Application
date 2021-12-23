@@ -20,14 +20,12 @@ letters = string.ascii_lowercase
 ACCESS_KEY = "AKIAUBLQ6V2IFEHUERNB"
 SECRET_KEY = "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"
 REGION_NAME = "eu-central-1"
-# BUCKET_NAME = ''.join(random.choice(letters) for i in range(10))
 BUCKET_NAME = "tts-buck"
-print(BUCKET_NAME)
 
 
 def create_url():
 
-  print(BUCKET_NAME)
+  print("Using bucket: " + BUCKET_NAME)
   ses = Session(aws_access_key_id='AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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',region_name='eu-central-1')
   client = ses.client('s3',aws_access_key_id='AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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')
   objs = client.list_objects(Bucket=BUCKET_NAME)['Contents']     
@@ -53,20 +51,13 @@ def synth_speech(form):
   neuralnames = ["Olivia","Amy","Emma","Brian","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly","Salli","Joey","Justin","Kevin","Matthew","Gabrielle","Léa","Vicki","Bianca","Takumi","Seoyeon","Camila","Lucia","Lupe"]
   recievedtext = request.form['text-input']
   language = request.form['Language']
-  neural = ""
-  print("text recieved")
+  print("Text recieved...")
   if language in neuralnames:
-    neural = "neural"
-    print("Using:" + neural)
+    print("Using the neural engine")
   else:
-    neural = "standard"
-    print("Using:" + neural)
-  print("text recieved")
-  
-  #)
+    print("Using the standard engine")
   print(s3.Bucket(BUCKET_NAME) in s3.buckets.all())
   polly_client = boto3.Session(aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name=REGION_NAME).client('polly')
-  #polly_client.synthesize_speech(VoiceId='Brian', OutputFormat='mp3', Text = recievedtext, Engine = 'neural')
   task = polly_client.start_speech_synthesis_task(VoiceId=language, OutputFormat='mp3', Text = recievedtext, Engine = neural, OutputS3BucketName = BUCKET_NAME, SnsTopicArn = "arn:aws:sns:eu-central-1:277799153296:TTS-Status")
   taskId = task['SynthesisTask']['TaskId']
   finished = False
@@ -83,11 +74,8 @@ def synth_speech(form):
   print(task_status)
   if finished == True:
     return create_url()
-  print("Call returned: ", task)
-print("finished")
-#if task['ResponseMetadata']['HTTPStatusCode'] == 200:
-    #time.sleep(20)
-    #return create_url()
+print("Done...")
+
 
   
 
