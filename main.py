@@ -111,7 +111,6 @@ def index():
       form = request.form
       result = synth_speech(form)
     resp = render_template('index.html', url = result)
-    resp.set_cookie('userid', )
     return resp
 
 
