@@ -10,7 +10,7 @@ import string
 from flask_awscognito import AWSCognitoAuthentication
 #login config
 app = Flask(__name__)
-app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='development')
+app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
 dynamodb = boto3.resource('dynamodb', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name='eu-central-1')
 
 table = dynamodb.Table('users')
