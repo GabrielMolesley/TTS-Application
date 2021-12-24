@@ -1,4 +1,5 @@
 from flask import Flask, render_template, url_for, request, session, redirect, make_response, sessions
+import flask_jwt_extended
 from flask_jwt_extended.utils import set_access_cookies
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
 
@@ -22,7 +23,7 @@ from flask_jwt_extended import JWTManager
 app = Flask(__name__)
 jwt = JWTManager(app)
 
-app.config['JWT_TOKEN_LOCATION'] = ['headers', 'query_string']
+flask_jwt_extended.jwt_required(optional=False, fresh=False, refresh=False, locations=None)
 app.config['AWS_DEFAULT_REGION'] = 'eu-central-1'
 app.config['AWS_COGNITO_DOMAIN'] = 'juun.co'
 app.config['AWS_COGNITO_USER_POOL_ID'] = 'eu-central-1_fpgMIOWgs'
