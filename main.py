@@ -20,6 +20,7 @@ from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
+jwt = JWTManager(app)
 
 app.config['AWS_DEFAULT_REGION'] = 'eu-central-1'
 app.config['AWS_COGNITO_DOMAIN'] = 'juun.co'
