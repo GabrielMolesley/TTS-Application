@@ -9,8 +9,24 @@ import random
 import string
 from flask_awscognito import AWSCognitoAuthentication
 #login config
+from celery import Celery
 app = Flask(__name__)
 app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        backend=app.config['0.0.0.0:443'],
+        broker=app.config['0.0.0.0:443']
+    )
+    celery.conf.update(app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
 dynamodb = boto3.resource('dynamodb', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name='eu-central-1')
 
 table = dynamodb.Table('users')
@@ -79,7 +95,12 @@ def synth_speech(form):
     return create_url()
 print("Done...")
 
-
+@app.before_request
+def before_request():
+    if not request.is_secure:
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
   
 
 
