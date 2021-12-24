@@ -19,9 +19,19 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 
+app = Flask(__name__)
+
+app.config['AWS_DEFAULT_REGION'] = 'eu-central-1'
+app.config['AWS_COGNITO_DOMAIN'] = 'juun.co'
+app.config['AWS_COGNITO_USER_POOL_ID'] = 'eu-central-1_fpgMIOWgs'
+app.config['AWS_COGNITO_USER_POOL_CLIENT_ID'] = '40a0485tsh6tgk1r0ad72rafj7'
+app.config['AWS_COGNITO_USER_POOL_CLIENT_SECRET'] = '1au9rspdrmcrb9r0502p2jk8cd58gid82crhpkak1ggoefpi4q0f'
+app.config['AWS_COGNITO_REDIRECT_URL'] = 'https://juun.co/loggedin'
+
+aws_auth = AWSCognitoAuthentication(app)
 #login config
 from celery import Celery
-app = Flask(__name__)
+
 app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
 def make_celery(app):
     celery = Celery(
@@ -150,14 +160,7 @@ def index():
       return redirect(aws_auth.get_sign_in_url())
     
 
-app.config['AWS_DEFAULT_REGION'] = 'eu-central-1'
-app.config['AWS_COGNITO_DOMAIN'] = 'juun.co'
-app.config['AWS_COGNITO_USER_POOL_ID'] = 'eu-central-1_fpgMIOWgs'
-app.config['AWS_COGNITO_USER_POOL_CLIENT_ID'] = '40a0485tsh6tgk1r0ad72rafj7'
-app.config['AWS_COGNITO_USER_POOL_CLIENT_SECRET'] = '1au9rspdrmcrb9r0502p2jk8cd58gid82crhpkak1ggoefpi4q0f'
-app.config['AWS_COGNITO_REDIRECT_URL'] = 'https://juun.co/loggedin'
 
-aws_auth = AWSCognitoAuthentication(app)
 
 @app.route("/loggedin", methods=["GET"])
 def logged_in():
