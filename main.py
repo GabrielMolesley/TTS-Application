@@ -1,13 +1,24 @@
-from flask import Flask, render_template, url_for, request, session, redirect
+from flask import Flask, render_template, url_for, request, session, redirect, make_response, sessions
+from flask_jwt_extended.utils import set_access_cookies
+from flask_jwt_extended.view_decorators import verify_jwt_in_request
+
 from werkzeug.wrappers import response
 
 import botocore
 import boto3
 from boto3 import Session
+
 import time
 import random
 import string
+
 from flask_awscognito import AWSCognitoAuthentication
+
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
+
 #login config
 from celery import Celery
 app = Flask(__name__)
@@ -131,9 +142,29 @@ def index():
     if request.method == 'POST':
       form = request.form
       result = synth_speech(form)
-    resp = render_template('index.html', url = result)
-    return resp
+      resp = render_template('index.html', url = result)
+    verify_jwt_in_request()
+    if get_jwt_identity():
+      return resp
+    else:
+      return redirect(aws_auth.get_sign_in_url())
+    
 
+app.config['AWS_DEFAULT_REGION'] = 'eu-central-1'
+app.config['AWS_COGNITO_DOMAIN'] = 'juun.co'
+app.config['AWS_COGNITO_USER_POOL_ID'] = 'eu-central-1_fpgMIOWgs'
+app.config['AWS_COGNITO_USER_POOL_CLIENT_ID'] = '40a0485tsh6tgk1r0ad72rafj7'
+app.config['AWS_COGNITO_USER_POOL_CLIENT_SECRET'] = '1au9rspdrmcrb9r0502p2jk8cd58gid82crhpkak1ggoefpi4q0f'
+app.config['AWS_COGNITO_REDIRECT_URL'] = 'https://juun.co/loggedin'
+
+aws_auth = AWSCognitoAuthentication(app)
+
+@app.route("/loggedin", methods=["GET"])
+def logged_in():
+    access_token = aws_auth.get_access_token(request.args)
+    resp = make_response(redirect(url_for("protected")))
+    set_access_cookies(resp, access_token, max_age=30 * 60)
+    return resp
 
 if __name__ == "__main__":
   context = ('certificate.crt', 'private.key')
