@@ -1,6 +1,6 @@
 
 #Import Flask and all its dependencies.
-from flask import Flask, render_template, url_for, request, session, redirect, make_response, sessions,jsonify
+from flask import Flask, render_template, url_for, request, session, redirect, make_response, sessions
 import flask_jwt_extended
 from flask_jwt_extended.utils import set_access_cookies
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
@@ -31,25 +31,11 @@ from flask_jwt_extended import JWTManager
 app = Flask(__name__)
 jwt = JWTManager(app)
 
-# Setup the flask-cognito-auth extension
-app.config['COGNITO_REGION'] = "eu-central-1"
-app.config['COGNITO_USER_POOL_ID'] = "eu-central-1_fpgMIOWgs"
-app.config['COGNITO_CLIENT_ID'] = "40a0485tsh6tgk1r0ad72rafj7"
-app.config['COGNITO_CLIENT_SECRET'] = "1au9rspdrmcrb9r0502p2jk8cd58gid82crhpkak1ggoefpi4q0f"
-app.config['COGNITO_DOMAIN'] = "https://juun.co"
-
-
-app.config['COGNITO_REDIRECT_URI'] = "https://yourdomainhere/cognito/callback"  # Specify this url in Callback URLs section of Appllication client settings of User Pool within AWS Cognito Sevice. Post login application will redirect to this URL
-
-app.config['COGNITO_SIGNOUT_URI'] = "https://yourdomainhere/login"
-
-app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
-
-cognito = CognitoAuthManager(app)
 
 #login config
 from celery import Celery
 
+app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
 def make_celery(app):
     celery = Celery(
         app.import_name,
@@ -145,20 +131,7 @@ def before_request():
 
 @app.route('/')
 def login():
-  print("Do the stuff before login to AWS Cognito Service")
-  response = redirect(url_for("cognitologin"))
-  return response
-
-@app.route('/logout')
-def logout():
-  print("Do the stuff before logout from AWS Cognito Service")
-  response = redirect(url_for("cognitologout"))
-  return response
-
-@app.route('/cognito/login', methods=['GET'])
-@login_handler
-def cognitologin():
-    pass
+  return redirect("https://juunlogin.auth.eu-central-1.amazoncognito.com/login?response_type=code&client_id=40a0485tsh6tgk1r0ad72rafj7&redirect_uri=https%3A%2F%2Fjuun.co%2Fhome", code=302)
 
 @app.route('/', methods=['GET', 'POST'])
 def check():
@@ -183,27 +156,15 @@ def index():
       form = request.form
       result = synth_speech(form)
       resp = render_template('index.html', url = result)
-    current_user = session["username"]
-    return jsonify(logged_in_as=current_user), 200, resp
     
-@app.route('/cognito/callback', methods=['GET'])
-@callback_handler
-def callback():
-    print("Do the stuff before post successfull login to AWS Cognito Service")
-    for key in list(session.keys()):
-        print(f"Value for {key} is {session[key]}")
-    response = redirect(url_for("home"))
-    return response
 
-@app.route('/cognito/logout', methods=['GET'])
-@logout_handler
-def cognitologout():
-    pass
 
-@app.route('/page500', methods=['GET'])
-def page500():
-    return jsonify(Error="Something went wrong"), 500
 
+@app.route("/loggedin", methods=["GET"])
+def logged_in():
+    resp = make_response(redirect(url_for("protected")))
+    set_access_cookies(resp, max_age=30 * 60)
+    return resp
 
 if __name__ == "__main__":
   context = ('certificate.crt', 'private.key')
