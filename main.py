@@ -1,5 +1,6 @@
 
 #Import Flask and all its dependencies.
+from enum import unique
 from flask import Flask, render_template, url_for, request, session, redirect, make_response, sessions
 import flask_jwt_extended
 from flask_jwt_extended.utils import set_access_cookies
@@ -16,44 +17,15 @@ import time
 import random
 import string
 
-#Import Flask Cognito Extension
-from flask_cognito_auth import CognitoAuthManager
-from flask_cognito_auth import login_handler
-from flask_cognito_auth import logout_handler
-from flask_cognito_auth import callback_handler
+#import packages for flask login
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin
 
-#Import Flask JWT Extension
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
+
 
 app = Flask(__name__)
-jwt = JWTManager(app)
 
-
-#login config
-from celery import Celery
-
-app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
-def make_celery(app):
-    celery = Celery(
-        app.import_name,
-        backend=app.config['0.0.0.0:443'],
-        broker=app.config['0.0.0.0:443']
-    )
-    celery.conf.update(app.config)
-
-    class ContextTask(celery.Task):
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return self.run(*args, **kwargs)
-
-    celery.Task = ContextTask
-    return celery
 dynamodb = boto3.resource('dynamodb', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name='eu-central-1')
-
-table = dynamodb.Table('users')
 
 s3 = boto3.resource('s3', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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')
 letters = string.ascii_lowercase
