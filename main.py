@@ -1,7 +1,7 @@
 
 #Import Flask and all its dependencies.
 from enum import unique
-from flask import Flask, render_template, url_for, request, session, redirect, make_response, sessions
+from flask import Flask, render_template, url_for, request, session, redirect, make_response, sessions, abort
 import flask_jwt_extended
 from flask_jwt_extended.utils import set_access_cookies
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
@@ -16,11 +16,28 @@ from boto3 import Session
 import time
 import random
 import string
-
+import os
+import pathlib
 #import packages for flask login
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin
+from google_auth_oauthlib.flow import Flow
+#Google auth shit
+GOOGLE_CLIENT_ID = "701515876447-76h7m4tj3cojl1b74b0hrtuafnhk247q.apps.googleusercontent.com"
+client_secret_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+flow = Flow.from_client_secrets_file(
+  client_secrets_file=client_secret_file,
+  scopes=['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email', "openid"],
+  redirect_uri="https://juun.co/callback"
+)
 
+def login_is_required(function):
+  def wrapper(*args, **kwargs):
+    if "google_id" not in session:
+      redirect("https://juun.co/login", 302) #Auth required
+    else:
+      return function()
+  return wrapper
 
 
 app = Flask(__name__)
@@ -33,6 +50,15 @@ ACCESS_KEY = "AKIAUBLQ6V2IFEHUERNB"
 SECRET_KEY = "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"
 REGION_NAME = "eu-central-1"
 BUCKET_NAME = "tts-buck"
+
+@app.route("/login")
+def login():
+  authorization_url, state = flow.authorization_url()
+  session['state'] = state
+  return redirect(authorization_url)
+
+
+
 
 
 def create_url():
@@ -114,16 +140,10 @@ def index():
       resp = render_template('index.html', url = result)
     
 
-
-
-@app.route("/loggedin", methods=["GET"])
-def logged_in():
-    resp = make_response(redirect(url_for("protected")))
-    set_access_cookies(resp, max_age=30 * 60)
-    return resp
-
-if __name__ == "__main__":
-  context = ('certificate.crt', 'private.key')
-  app.run(debug=False, host="0.0.0.0", port="443", ssl_context=context)
+@app.route('/callback')
+def callback():
+  if __name__ == "__main__":
+    context = ('certificate.crt', 'private.key')
+    app.run(debug=False, host="0.0.0.0", port="443", ssl_context=context)
 
 
