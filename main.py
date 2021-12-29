@@ -32,14 +32,14 @@ flow = Flow.from_client_secrets_file(
   redirect_uri="https://juun.co/callback"
 )
 
-def login_is_required(function):
+def login_is_required(func):
   def wrapper(*args, **kwargs):
     if "google_id" not in session:
       redirect("https://juun.co/login", 302) #Auth required
     else:
       Loggedin = True
       return function()
-      
+  wrapper.__name__ = func.__name__    
   return wrapper
 
 
