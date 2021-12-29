@@ -32,17 +32,6 @@ flow = Flow.from_client_secrets_file(
   redirect_uri="https://juun.co/callback"
 )
 
-def login_is_required(func):
-  def wrapper(*args, **kwargs):
-    if "google_id" not in session:
-      redirect("https://juun.co/login", 302) #Auth required
-    else:
-      Loggedin = True
-      return function()
-  wrapper.__name__ = func.__name__    
-  return wrapper
-
-
 app = Flask(__name__)
 
 dynamodb = boto3.resource('dynamodb', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name='eu-central-1')
