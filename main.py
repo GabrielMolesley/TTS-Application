@@ -1,6 +1,5 @@
 
 #Import Flask and all its dependencies.
-from enum import unique
 from flask import Flask, render_template, url_for, request, session, redirect, make_response, sessions, abort
 import flask_jwt_extended
 from flask_jwt_extended.utils import set_access_cookies
@@ -118,7 +117,6 @@ def synth_speech(form):
   print(task_status)
   if finished == True:
     return create_url()
-print("Done...")
 
 @app.before_request
 def before_request():
