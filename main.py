@@ -105,22 +105,6 @@ def before_request():
 def login():
   return redirect("https://juunlogin.auth.eu-central-1.amazoncognito.com/login?response_type=code&client_id=40a0485tsh6tgk1r0ad72rafj7&redirect_uri=https%3A%2F%2Fjuun.co%2Fhome", code=302)
 
-@app.route('/', methods=['GET', 'POST'])
-def check():
-  if request.method == 'POST':
-    username = request.form['username']
-    password = request.form['password']
-    table = dynamodb.Table('users')
-
-    response = table.get_item(Key={'UserID': username})
-    response2 = table.get_item(Key={'password': password})
-    name = username
-  if response['Item'] and response2['Item']:
-    print('login found.')
-    return render_template('index.html', name = name)
-  else:
-    print('login not found')
-    return render_template('login.html')
 @app.route('/home', methods=['GET', 'POST'])
 def index():
     result = None
