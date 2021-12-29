@@ -23,6 +23,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin
 from google_auth_oauthlib.flow import Flow
 #Google auth shit
+loggedin = False
 GOOGLE_CLIENT_ID = "701515876447-76h7m4tj3cojl1b74b0hrtuafnhk247q.apps.googleusercontent.com"
 client_secret_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
 flow = Flow.from_client_secrets_file(
@@ -36,7 +37,9 @@ def login_is_required(function):
     if "google_id" not in session:
       redirect("https://juun.co/login", 302) #Auth required
     else:
+      Loggedin = True
       return function()
+      
   return wrapper
 
 
@@ -129,7 +132,10 @@ def before_request():
 
 @app.route('/')
 def login():
-  return redirect("https://juunlogin.auth.eu-central-1.amazoncognito.com/login?response_type=code&client_id=40a0485tsh6tgk1r0ad72rafj7&redirect_uri=https%3A%2F%2Fjuun.co%2Fhome", code=302)
+  if loggedin == True:
+    redirect('https://juun.co/home')
+  else:
+    redirect('https://juun.co/login')
 
 @app.route('/home', methods=['GET', 'POST'])
 def index():
