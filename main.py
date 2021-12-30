@@ -136,7 +136,7 @@ def index():
       form = request.form
       result = synth_speech(form)
       resp = render_template('index.html', url = result)
-    
+      return resp
 
 @app.route('/callback')
 def callback():
