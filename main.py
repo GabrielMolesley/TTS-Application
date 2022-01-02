@@ -26,17 +26,16 @@ client_secret_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.
 flow = Flow.from_client_secrets_file(
   client_secrets_file=client_secret_file,
   scopes=['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email', "openid"],
-  redirect_uri="https://juun.co/callback"
+  redirect_uri="/callback"
 )
 
-def login_is_required(func):
+def login_is_required(function):
   def wrapper(*args, **kwargs):
     if "google_id" not in session:
       return abort(401) #Auth required
     else:
       Loggedin = True
-      return function()
-  wrapper.__name__ = func.__name__    
+      return function()    
   return wrapper
 
 
@@ -119,7 +118,7 @@ def callback():
   if not session["state"] == request.args["state"]:
     abort(500)
   credentials = flow.credentials
-  request_session = session.request
+  request_session = requests.session()
   cached_session =  cachecontrol.CacheControl(request_session)
   token_request = google.auth.transport.requests.Request(session=cached_session)
 
