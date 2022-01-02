@@ -145,9 +145,7 @@ def index():
     if request.method == 'POST':
       form = request.form
       result = synth_speech(form)
-    resp = render_template('index.html', url = result)
-    return resp
-
+    return render_template('index.html', url = result)
 if __name__ == "__main__":
   context = ('certificate.crt', 'private.key')
   app.run(debug=False, host="0.0.0.0", port="443", ssl_context=context)
