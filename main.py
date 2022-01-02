@@ -9,10 +9,34 @@ import time
 import random
 import string
 from flask_awscognito import AWSCognitoAuthentication
+import os
+import pathlib
+from google_auth_oauthlib import Flow
 #login config
 from celery import Celery
 app = Flask(__name__)
 app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
+
+#Google auth shit
+loggedin = False
+GOOGLE_CLIENT_ID = "701515876447-76h7m4tj3cojl1b74b0hrtuafnhk247q.apps.googleusercontent.com"
+client_secret_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+flow = Flow.from_client_secrets_file(
+  client_secrets_file=client_secret_file,
+  scopes=['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email', "openid"],
+  redirect_uri="https://juun.co/callback"
+)
+
+def login_is_required(func):
+  def wrapper(*args, **kwargs):
+    if "google_id" not in session:
+      redirect("https://juun.co/login", 302) #Auth required
+    else:
+      Loggedin = True
+      return function()
+  wrapper.__name__ = func.__name__    
+  return wrapper
+
 
 s3 = boto3.resource('s3', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='tFSwBEbyyG3irs41e7pRyr9lYjbvEQpDFfw7ocD1')
 letters = string.ascii_lowercase
@@ -84,10 +108,23 @@ def before_request():
         url = request.url.replace('http://', 'https://', 1)
         code = 301
         return redirect(url, code=code)
-  
+
+
+@app.route('/callback')
+def callback():
+  return "callback"
+
+
 @app.route('/')
 def login():
   return render_template('login.html')
+
+@app.route('/login')
+def login():
+  authorization_url, state = flow.authorization_url()
+  session['state'] = state
+  return redirect(authorization_url)
+
 
 @app.route('/', methods=['GET', 'POST'])
 def check():
@@ -100,7 +137,7 @@ def index():
       result = synth_speech(form)
     resp = render_template('index.html', url = result)
     return resp
-    
+
 if __name__ == "__main__":
   context = ('certificate.crt', 'private.key')
   app.run(debug=False, host="0.0.0.0", port="443", ssl_context=context)
