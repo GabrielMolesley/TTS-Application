@@ -18,7 +18,6 @@ import google.auth.transport.requests
 from google.oauth2 import id_token
 app = Flask(__name__)
 app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 #Google auth shit
 loggedin = False
 GOOGLE_CLIENT_ID = "701515876447-76h7m4tj3cojl1b74b0hrtuafnhk247q.apps.googleusercontent.com"
@@ -26,7 +25,7 @@ client_secret_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.
 flow = Flow.from_client_secrets_file(
   client_secrets_file=client_secret_file,
   scopes=['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email', "openid"],
-  redirect_uri="/callback"
+  redirect_uri="https://juun.co/callback"
 )
 
 def login_is_required(function):
