@@ -31,7 +31,7 @@ flow = Flow.from_client_secrets_file(
 def login_is_required(func):
   def wrapper(*args, **kwargs):
     if "google_id" not in session:
-      redirect("https://juun.co/login", 401) #Auth required
+      return abort(401) #Auth required
     else:
       Loggedin = True
       return function()
@@ -139,7 +139,8 @@ def login():
 
 
 @app.route('/', methods=['GET', 'POST'])
-def home():
+@login_is_required
+def index():
     result = None
     if request.method == 'POST':
       form = request.form
