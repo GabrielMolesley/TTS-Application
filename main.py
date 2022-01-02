@@ -140,14 +140,13 @@ def login():
 
 @app.route('/', methods=['GET', 'POST'])
 @login_is_required
-def index():
-    result = "Nothing"
+def home():
+    result = None
     if request.method == 'POST':
       form = request.form
       result = synth_speech(form)
-      return render_template('index.html', url = result)
-    else:
-      return render_template('index.html', url = result)
+    return render_template('index.html', url = result)
+
 
 
 
