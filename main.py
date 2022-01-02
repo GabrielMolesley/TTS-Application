@@ -31,7 +31,7 @@ flow = Flow.from_client_secrets_file(
 def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:
-            return abort(401)  # Authorization required
+            return redirect('/login')  # Authorization required
         else:
             return function()
 
@@ -143,6 +143,7 @@ def login():
     return redirect(authorization_url)
 
 @app.route('/', methods=['GET', 'POST'])
+@login_is_required
 def index():
     result = None
     if request.method == 'POST':
