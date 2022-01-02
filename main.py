@@ -130,7 +130,7 @@ def callback():
     session["google_id"] = id_info.get("sub")
     session["name"] = id_info.get("name")
     return redirect("/")
-    
+
 @app.route("/logout")
 def logout():
     session.clear()
@@ -149,7 +149,10 @@ def index():
     if request.method == 'POST':
       form = request.form
       result = synth_speech(form)
-    return render_template('index.html', url = result)
+      return render_template('index.html', url = result)
+    else:
+      return render_template('index.html', url = result)
+
 
 
 
