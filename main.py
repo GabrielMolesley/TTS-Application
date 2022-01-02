@@ -1,5 +1,6 @@
 
 from flask import Flask, render_template, url_for, request, session, redirect, abort
+from google.auth.transport.requests
 from werkzeug.datastructures import _CacheControl, Authorization
 from werkzeug.wrappers import response
 import botocore
@@ -11,6 +12,7 @@ import string
 from flask_awscognito import AWSCognitoAuthentication
 import os
 import pathlib
+import requests
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
@@ -118,7 +120,7 @@ def callback():
   if not session["state"] == request.args["state"]:
     abort(500)
   credentials = flow.credentials
-  request_session = request.session
+  request_session = session.request
   cached_session =  cachecontrol.CacheControl(request_session)
   token_request = google.auth.transport.requests.Request(session=cached_session)
 
