@@ -53,7 +53,7 @@ SECRET_KEY = "tFSwBEbyyG3irs41e7pRyr9lYjbvEQpDFfw7ocD1"
 REGION_NAME = "eu-central-1"
 BUCKET_NAME = "tts-buck"
 
-@app.route("/login")
+@app.route('/login')
 def login():
   authorization_url, state = flow.authorization_url()
   session['state'] = state
@@ -123,11 +123,7 @@ def before_request():
     if not request.is_secure:
         url = request.url.replace('http://', 'https://', 1)
         code = 301
-        return redirect(url, code=code)
-  
-
-
-
+        return redirect(url, code=code)  
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
