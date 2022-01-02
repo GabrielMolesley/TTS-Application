@@ -1,50 +1,18 @@
 
-#Import Flask and all its dependencies.
-from flask import Flask, render_template, url_for, request, session, redirect, make_response, sessions, abort
-import flask_jwt_extended
-from flask_jwt_extended.utils import set_access_cookies
-from flask_jwt_extended.view_decorators import verify_jwt_in_request
+from flask import Flask, render_template, url_for, request, session, redirect
 from werkzeug.wrappers import response
 
-#Import boto3 package.
 import botocore
 import boto3
 from boto3 import Session
-
-#Import packages for string generation.
 import time
 import random
 import string
-import os
-import pathlib
-#import packages for flask login
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin
-from google_auth_oauthlib.flow import Flow
-#Google auth shit
-loggedin = False
-GOOGLE_CLIENT_ID = "701515876447-76h7m4tj3cojl1b74b0hrtuafnhk247q.apps.googleusercontent.com"
-client_secret_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
-flow = Flow.from_client_secrets_file(
-  client_secrets_file=client_secret_file,
-  scopes=['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email', "openid"],
-  redirect_uri="https://juun.co/callback"
-)
-
-def login_is_required(func):
-  def wrapper(*args, **kwargs):
-    if "google_id" not in session:
-      redirect("https://juun.co/login", 302) #Auth required
-    else:
-      Loggedin = True
-      return function()
-  wrapper.__name__ = func.__name__    
-  return wrapper
-
-
+from flask_awscognito import AWSCognitoAuthentication
+#login config
+from celery import Celery
 app = Flask(__name__)
-
-dynamodb = boto3.resource('dynamodb', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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', region_name='eu-central-1')
+app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
 
 s3 = boto3.resource('s3', aws_access_key_id= 'AKIAUBLQ6V2IFEHUERNB', aws_secret_access_key='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')
 letters = string.ascii_lowercase
@@ -52,15 +20,6 @@ ACCESS_KEY = "AKIAUBLQ6V2IFEHUERNB"
 SECRET_KEY = "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"
 REGION_NAME = "eu-central-1"
 BUCKET_NAME = "tts-buck"
-
-@app.route('/login')
-def login():
-  authorization_url, state = flow.authorization_url()
-  session['state'] = state
-  return redirect(authorization_url)
-
-
-
 
 
 def create_url():
@@ -117,28 +76,31 @@ def synth_speech(form):
   print(task_status)
   if finished == True:
     return create_url()
+print("Done...")
 
 @app.before_request
 def before_request():
     if not request.is_secure:
         url = request.url.replace('http://', 'https://', 1)
         code = 301
-        return redirect(url, code=code)  
+        return redirect(url, code=code)
+  
+@app.route('/')
+def login():
+  return render_template('login.html')
 
 @app.route('/', methods=['GET', 'POST'])
+def check():
+  return redirect('https://juun.co/login')
+@app.route('/home', methods=['GET', 'POST'])
 def index():
     result = None
     if request.method == 'POST':
       form = request.form
       result = synth_speech(form)
-      return render_template('index.html', url = result)
-
-@app.route('/callback')
-def callback():
-  return "callback"
-
+    resp = render_template('index.html', url = result)
+    return resp
+    
 if __name__ == "__main__":
   context = ('certificate.crt', 'private.key')
   app.run(debug=False, host="0.0.0.0", port="443", ssl_context=context)
-
-
