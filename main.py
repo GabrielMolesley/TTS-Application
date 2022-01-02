@@ -143,7 +143,6 @@ def login():
     return redirect(authorization_url)
 
 @app.route('/', methods=['GET', 'POST'])
-@login_is_required
 def index():
     result = None
     if request.method == 'POST':
