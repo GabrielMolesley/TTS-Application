@@ -134,7 +134,7 @@ def callback():
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("/")
+    return redirect("/", 302)
 
 @app.route("/login")
 def login():
@@ -149,10 +149,7 @@ def index():
     if request.method == 'POST':
       form = request.form
       result = synth_speech(form)
-      return render_template('index.html', url = result)
-    else:
-      return render_template('index.html', url = result)
-
+    return render_template('index.html', url = result)
 
 
 
