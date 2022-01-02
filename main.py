@@ -115,9 +115,6 @@ def callback():
   return "callback"
 
 
-@app.route('/')
-def login():
-  return render_template('login.html')
 
 @app.route('/login')
 def login():
