@@ -122,7 +122,7 @@ def callback():
   cached_session =  cachecontrol.CacheControl(request_session)
   token_request = google.auth.transport.requests.Request(session=cached_session)
 
-  id_info = id_token.verify.oauth2_token(
+  id_info = id_token.verify_oauth2_token(
     id_token =credentials._id_token,
     request = token_request,
     audience =GOOGLE_CLIENT_ID 
