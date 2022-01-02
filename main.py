@@ -11,7 +11,7 @@ import string
 from flask_awscognito import AWSCognitoAuthentication
 import os
 import pathlib
-from google_auth_oauthlib import Flow
+from google_auth_oauthlib.flow import Flow
 #login config
 from celery import Celery
 app = Flask(__name__)
