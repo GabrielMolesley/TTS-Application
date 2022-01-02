@@ -144,7 +144,7 @@ def home():
     if request.method == 'POST':
       form = request.form
       result = synth_speech(form)
-    return render_template('templates/index.html', url = result)
+    return render_template('index.html', url = result)
 
 
 
