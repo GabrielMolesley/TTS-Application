@@ -115,10 +115,10 @@ def before_request():
 def callback():
   flow.fetch_token(authorization_response=request.url)
 
-  if not session['state'] == request.args['state']:
+  if not session["state"] == request.args["state"]:
     abort(500)
   credentials = flow.credentials
-  request_session = request.session()
+  request_session = request.session
   cached_session =  cachecontrol.CacheControl(request_session)
   token_request = google.auth.transport.requests.Request(session=cached_session)
 
@@ -134,7 +134,7 @@ def callback():
 @app.route('/login')
 def login():
   authorization_url, state = flow.authorization_url()
-  session['state'] = state
+  session["state"] = state
   return redirect(authorization_url)
 
 
