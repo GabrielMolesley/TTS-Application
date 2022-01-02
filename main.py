@@ -1,6 +1,5 @@
 
 from flask import Flask, render_template, url_for, request, session, redirect, abort
-from google.auth.transport.requests
 from werkzeug.datastructures import _CacheControl, Authorization
 from werkzeug.wrappers import response
 import botocore
