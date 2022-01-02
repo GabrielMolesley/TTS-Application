@@ -1,7 +1,7 @@
 
-from flask import Flask, render_template, url_for, request, session, redirect
+from flask import Flask, render_template, url_for, request, session, redirect, abort
+from werkzeug.datastructures import _CacheControl, Authorization
 from werkzeug.wrappers import response
-
 import botocore
 import boto3
 from boto3 import Session
@@ -12,8 +12,9 @@ from flask_awscognito import AWSCognitoAuthentication
 import os
 import pathlib
 from google_auth_oauthlib.flow import Flow
-#login config
-from celery import Celery
+from pip._vendor import cachecontrol
+import google.auth.transport.requests
+from google.oauth2 import id_token
 app = Flask(__name__)
 app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
 
@@ -30,7 +31,7 @@ flow = Flow.from_client_secrets_file(
 def login_is_required(func):
   def wrapper(*args, **kwargs):
     if "google_id" not in session:
-      redirect("https://juun.co/login", 302) #Auth required
+      redirect("https://juun.co/login", 401) #Auth required
     else:
       Loggedin = True
       return function()
@@ -112,10 +113,24 @@ def before_request():
 
 @app.route('/callback')
 def callback():
-  return "callback"
+  flow.fetch_token(authorization_response=request.url)
 
+  if not session['state'] == request.args['state']:
+    abort(500)
+  credentials = flow.credentials
+  request_session = request.session()
+  cached_session =  cachecontrol.CacheControl(request_session)
+  token_request = google.auth.transport.requests.Request(session=cached_session)
 
-
+  id_info = id_token.verify.oauth2_token(
+    id_token =credentials._id_token,
+    request = token_request,
+    audience =GOOGLE_CLIENT_ID 
+    
+  )
+  session['google_id'] = id_info.get('sub')
+  session['name'] = id_info.get('name')
+  return redirect('/')
 @app.route('/login')
 def login():
   authorization_url, state = flow.authorization_url()
@@ -124,6 +139,7 @@ def login():
 
 
 @app.route('/', methods=['GET', 'POST'])
+@login_is_required
 def index():
     result = None
     if request.method == 'POST':

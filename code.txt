@@ -1,0 +1,32 @@
+from google_auth_oauthlib.flow import Flow
+
+
+#Google auth shit
+loggedin = False
+GOOGLE_CLIENT_ID = "701515876447-76h7m4tj3cojl1b74b0hrtuafnhk247q.apps.googleusercontent.com"
+client_secret_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+flow = Flow.from_client_secrets_file(
+  client_secrets_file=client_secret_file,
+  scopes=['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email', "openid"],
+  redirect_uri="https://juun.co/callback"
+)
+
+def login_is_required(func):
+  def wrapper(*args, **kwargs):
+    if "google_id" not in session:
+      redirect("https://juun.co/login", 302) #Auth required
+    else:
+      Loggedin = True
+      return function()
+  wrapper.__name__ = func.__name__    
+  return wrapper
+
+  @app.route('/callback')
+def callback():
+  return "callback"
+
+@app.route('/login')
+def login():
+  authorization_url, state = flow.authorization_url()
+  session['state'] = state
+  return redirect(authorization_url)
