@@ -5,10 +5,7 @@ from werkzeug.wrappers import response
 import botocore
 import boto3
 from boto3 import Session
-import time
-import random
 import string
-from flask_awscognito import AWSCognitoAuthentication
 import os
 import pathlib
 import requests
@@ -143,7 +140,6 @@ def login():
     return redirect(authorization_url)
 
 @app.route('/', methods=['GET', 'POST'])
-@login_is_required
 def index():
     result = None
     if request.method == 'POST':
