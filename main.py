@@ -139,7 +139,6 @@ def login():
 
 
 @app.route('/', methods=['GET', 'POST'])
-@login_is_required
 def home():
     result = None
     if request.method == 'POST':
