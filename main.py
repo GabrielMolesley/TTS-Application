@@ -18,7 +18,7 @@ import google.auth.transport.requests
 from google.oauth2 import id_token
 app = Flask(__name__)
 app.config.update(SECRET_KEY='???+(?&?2-C?J?>', ENV='production')
-
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 #Google auth shit
 loggedin = False
 GOOGLE_CLIENT_ID = "701515876447-76h7m4tj3cojl1b74b0hrtuafnhk247q.apps.googleusercontent.com"
